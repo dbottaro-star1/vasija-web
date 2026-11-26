@@ -1,0 +1,28 @@
+---
+/** Page not found. Cloudflare Pages serves dist/404.html for any path that does not exist. */
+import Layout from '../layouts/Layout.astro';
+import { url } from '../lib/url';
+import { PATHS } from '../vasija';
+
+const title = 'Página no encontrada | Vasija';
+const description =
+  'Esta página no existe o cambió de lugar. Volvé al inicio de Vasija o mirá la página de soporte si estabas buscando ayuda con la app o con tu cuenta.';
+---
+
+<Layout title={title} description={description} noindex>
+  <article class="k-envoltura k-doc">
+    <header class="k-doc-cabeza">
+      <p class="k-etiqueta">Error 404</p>
+      <h1>Esta página no existe</h1>
+      <p class="k-doc-lede">Puede que el link esté mal escrito o que la página haya cambiado de lugar.</p>
+    </header>
+    <p>
+      <a class="k-boton" href={url(PATHS.home)}>
+        Volver al inicio
+      </a>
+    </p>
+    <p>
+      Si buscabas ayuda con la app, mirá la página de <a href={url(PATHS.support)}>soporte</a>.
+    </p>
+  </article>
+</Layout>

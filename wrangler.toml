@@ -1,0 +1,11 @@
+# Cloudflare Pages config. With this file, the bindings below are the source of truth (not the dashboard).
+name = "vasija-web"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-11-01"
+
+# Waitlist (functions/api/lista.ts). Table: migrations/0001_lista_espera.sql.
+[[d1_databases]]
+binding = "DB"
+database_name = "vasija-lista"
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"

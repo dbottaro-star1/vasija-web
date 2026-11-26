@@ -1,0 +1,21 @@
+{
+  "$comment": "Single source of truth for the Content-Security-Policy. Layout.astro emits it as a <meta> tag (security/csp.mjs drops the header-only directives), public/_headers sends the full policy as a header (scripts/build-headers.mjs writes it into dist/_headers), and scripts/check-csp.mjs checks the built site against it. The site has no inline scripts: every script is a file.",
+  "headerOnly": ["frame-ancestors", "upgrade-insecure-requests"],
+  "directives": {
+    "default-src": ["'self'"],
+    "script-src": ["'self'"],
+    "style-src": ["'self'"],
+    "style-src-attr": ["'unsafe-inline'"],
+    "img-src": ["'self'", "data:"],
+    "font-src": ["'self'"],
+    "connect-src": ["'self'"],
+    "manifest-src": ["'self'"],
+    "frame-src": ["'none'"],
+    "worker-src": ["'none'"],
+    "form-action": ["'self'"],
+    "base-uri": ["'none'"],
+    "object-src": ["'none'"],
+    "frame-ancestors": ["'none'"],
+    "upgrade-insecure-requests": []
+  }
+}

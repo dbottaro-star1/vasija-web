@@ -1,0 +1,38 @@
+{
+  "name": "vasija-web",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && node scripts/build-headers.mjs",
+    "preview": "astro preview",
+    "check": "astro check",
+    "lint:copy": "node scripts/lint-copy.mjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check:csp": "node scripts/check-csp.mjs",
+    "check:seo": "node scripts/check-seo.mjs",
+    "verify": "npm run format:check && npm run check && npm run build && npm run lint:copy && npm run check:csp && npm run check:seo"
+  },
+  "dependencies": {
+    "astro": "^7.4.1",
+    "@astrojs/sitemap": "^3.7.4"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.11",
+    "@fontsource/eb-garamond": "^5.3.0",
+    "@fontsource/frank-ruhl-libre": "^5.3.0",
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "@fontsource/nanum-pen-script": "^5.3.0",
+    "@resvg/resvg-js": "2.6.2",
+    "prettier": "3.9.10",
+    "prettier-plugin-astro": "1.1.1",
+    "satori": "0.63.0",
+    "sharp": "0.35.5",
+    "typescript": "^6.0.3"
+  }
+}

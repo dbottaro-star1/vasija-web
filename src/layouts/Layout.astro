@@ -1,0 +1,142 @@
+---
+/**
+ * Layout for every page of vasija.app. Spanish only, with the app's own look (src/styles/vasija.css): the CSP meta tag,
+ * Seo tags, sitewide and breadcrumb JSON-LD, the header and the footer. No analytics or ads pixels.
+ */
+import '../styles/vasija.css';
+import garamond from '@fontsource/eb-garamond/files/eb-garamond-latin-400-normal.woff2?url';
+import plexMono from '@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-500-normal.woff2?url';
+
+import JsonLd from '../components/JsonLd.astro';
+import LogoVasija from '../components/LogoVasija.astro';
+import Seo from '../components/Seo.astro';
+import { APP, COMUNIDAD_WHATSAPP, PATHS } from '../vasija';
+import { breadcrumbSchema, sitewideSchema, type Crumb, type JsonLdNode } from '../lib/schema';
+import { IS_PREVIEW, PUBLISHER } from '../lib/site';
+import { cspString } from '../../security/csp.mjs';
+import { absoluteUrl, stripBase, url } from '../lib/url';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Trail below the home page. The home page passes nothing. */
+  trail?: Crumb[];
+  /** Links in the header. The landing shows its sections; the other pages link back to it. */
+  nav?: { label: string; href: string }[];
+  jsonLd?: JsonLdNode[];
+  /** Pages that should stay out of search results (the 404). */
+  noindex?: boolean;
+}
+
+const { title, description, trail = [], nav, jsonLd = [], noindex = false } = Astro.props;
+
+const path = stripBase(Astro.url.pathname);
+const ogImage = absoluteUrl('/og.png', Astro.site);
+const ogAlt = `${APP.fullName}. Con el método de ${APP.teacher}: un cuaderno para hacer, no para leer.`;
+const crumbs: Crumb[] = [{ name: APP.name, path: PATHS.home }, ...trail];
+const graph: JsonLdNode[] = [sitewideSchema(), ...(trail.length ? [breadcrumbSchema(crumbs)] : []), ...jsonLd];
+
+const enlaces = nav ?? [{ label: `Volver a ${APP.name}`, href: PATHS.home }];
+const pie = [
+  { label: 'Privacidad', href: PATHS.privacy },
+  { label: 'Soporte', href: PATHS.support },
+  { label: 'Borrar cuenta', href: PATHS.deleteAccount },
+];
+const copyright = `© ${new Date().getFullYear()} ${APP.publisher}, ${APP.publisherCountry}.`;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    {import.meta.env.PROD && <meta http-equiv="Content-Security-Policy" content={cspString({ meta: true })} />}
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#F0F0EE" />
+    <meta name="color-scheme" content="light" />
+
+    <Seo title={title} description={description} path={path} image={ogImage} imageAlt={ogAlt} noindex={noindex} />
+
+    <link rel="icon" href={url('/icono.svg')} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={url('/apple-touch-icon.png')} />
+    {!IS_PREVIEW && <link rel="sitemap" href={url('/sitemap-index.xml')} />}
+
+    <link rel="preload" as="font" type="font/woff2" href={garamond} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={plexMono} crossorigin />
+
+    <JsonLd data={graph} />
+  </head>
+  <body>
+    <a class="k-salto" href="#main">
+      Saltar al contenido
+    </a>
+    <div class="k-grano" aria-hidden="true"></div>
+
+    <header class="k-cabecera" data-cabecera>
+      <div class="k-envoltura k-cabecera-in">
+        <a class="k-marca" href={url(PATHS.home)} aria-label={`${APP.fullName}, inicio`}>
+          <LogoVasija size={40} animado />
+          <span class="k-marca-texto">
+            <span class="k-marca-nombre">{APP.name}</span>
+            <span class="k-marca-bajada">{APP.tagline}</span>
+          </span>
+        </a>
+        <nav class="k-nav" aria-label="Principal">
+          {enlaces.map((l) => (
+            <a href={url(l.href)}>{l.label}</a>
+          ))}
+          <slot name="cta" />
+        </nav>
+      </div>
+    </header>
+
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+
+    <footer class="k-pie">
+      <div class="k-envoltura k-pie-in">
+        <div class="k-pie-marca">
+          <span class="k-marca">
+            <LogoVasija size={40} />
+            <span class="k-marca-texto">
+              <span class="k-marca-nombre">{APP.name}</span>
+              <span class="k-marca-bajada">{APP.tagline}</span>
+            </span>
+          </span>
+          <p>Una app para crecer haciendo, no leyendo. El método y los textos son de {APP.teacher}.</p>
+        </div>
+        <ul class="k-pie-links">
+          {pie.map((l) => (
+            <li>
+              <a href={url(l.href)} aria-current={path === l.href ? 'page' : undefined}>
+                {l.label}
+              </a>
+            </li>
+          ))}
+          <li>
+            <a href={COMUNIDAD_WHATSAPP} target="_blank" rel="noopener noreferrer">
+              Comunidad
+            </a>
+          </li>
+          <li>
+            <a href={`mailto:${APP.email}`}>Contacto</a>
+          </li>
+        </ul>
+        <div class="k-pie-legal">
+          <span>{copyright}</span>
+          <span>
+            Una app de{' '}
+            <a href={PUBLISHER.url} rel="noopener">
+              {PUBLISHER.brand}
+            </a>
+          </span>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      import { initVasija } from '../scripts/init';
+      initVasija();
+    </script>
+  </body>
+</html>
