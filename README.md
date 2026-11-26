@@ -49,7 +49,7 @@ email (único), nombre, si ya hizo algo con Kevin, origen (utm o referrer) y fec
 - Cambios en la tabla: un archivo nuevo en `migrations/` y `npx wrangler d1 migrations apply vasija-lista --remote`.
 
 La primera vez que alguien se anota, la función le manda un mail de confirmación con Resend (dominio `send.vasija.app`,
-remitente `hola@send.vasija.app`, respuestas a `hola@vasija.app`). Necesita el secreto `RESEND_API_KEY` en Cloudflare
+remitente "Vasija - Crecimiento personal" `hola@send.vasija.app`, respuestas a `hola@vasija.app`). Necesita el secreto `RESEND_API_KEY` en Cloudflare
 Pages (Settings → Variables and secrets, tipo Secret, en Production y Preview). Sin el secreto, se guarda igual y no se
 manda nada. Si alguien se anota dos veces, no recibe otro mail. El mail está en `src/correo/confirmacion.ts`; su logo
 (`public/correo/logo.png`, se regenera con `node scripts/correo-logo.mjs`) y sus fuentes (`public/correo/fuentes/`) se

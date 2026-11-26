@@ -29,7 +29,7 @@ type Ctx = { request: Request; env: Env; waitUntil(promise: Promise<unknown>): v
 
 const EXPERIENCIAS = new Set(['Cuaderno de trabajo', 'Curso', 'Lo sigo en redes', 'Todavía no']);
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-const REMITENTE = 'Vasija <hola@send.vasija.app>';
+const REMITENTE = '"Vasija - Crecimiento personal" <hola@send.vasija.app>';
 const RESPONDER_A = 'hola@vasija.app';
 
 const texto = (value: unknown, max: number): string | null => {
