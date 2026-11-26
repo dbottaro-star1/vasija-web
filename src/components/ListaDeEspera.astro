@@ -1,7 +1,7 @@
 ---
 /**
  * Waitlist. Posts to /api/lista (functions/api/lista.ts), which stores each person in the D1 database of the Cloudflare
- * account (table lista_espera). With scripts it submits in place (src/scripts/lista.ts); without them the function
+ * account (table lista_espera) and sends them a confirmation email through Resend. With scripts it submits in place (src/scripts/lista.ts); without them the function
  * redirects back with ?enviado=1 (or ?error=1).
  *
  * Spam: `botcheck` is a honeypot hidden from people.
@@ -58,8 +58,8 @@ const endpoint = url('/api/lista');
       <span data-lista-label>Anotarme</span>
     </button>
     <p class="lista-nota">
-      Te escribimos solo para avisarte cuando salga. Podés pedir que te saquemos cuando quieras. Más en la{' '}
-      <a href={url(PATHS.privacy)}>política de privacidad</a>.
+      Te mandamos un correo para confirmarte y otro el día que salga. Nada más. Podés pedir que te saquemos cuando
+      quieras. Más en la <a href={url(PATHS.privacy)}>política de privacidad</a>.
     </p>
     <p class="lista-error" role="alert" hidden data-lista-error>
       No se pudo enviar. Probá de nuevo en un rato o escribinos a <a href={`mailto:${APP.email}`}>{APP.email}</a>.
@@ -68,7 +68,10 @@ const endpoint = url('/api/lista');
 
   <div class="lista-hecho" role="status" tabindex="-1" hidden data-lista-hecho>
     <p class="k-mano">¡Listo, ya estás!</p>
-    <p>Te avisamos por correo apenas la app esté en las tiendas.</p>
+    <p>
+      Te mandamos un correo para confirmarlo (si no lo ves, fijate en spam). Y te avisamos apenas la app esté en las
+      tiendas.
+    </p>
   </div>
 </div>
 
