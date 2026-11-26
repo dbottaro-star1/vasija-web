@@ -467,6 +467,27 @@ main:focus {
   }
 }
 
+/* Phones: logo and "Vasija" on one centered line, the tagline centered under both (header and footer). */
+@media (max-width: 760px) {
+  .k-marca {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    column-gap: 10px;
+    row-gap: 6px;
+  }
+
+  .k-marca-texto {
+    display: contents;
+  }
+
+  .k-marca-bajada {
+    flex-basis: 100%;
+    text-align: center;
+  }
+}
+
 .k-nav {
   display: flex;
   align-items: center;
