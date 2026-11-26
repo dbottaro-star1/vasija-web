@@ -6,11 +6,13 @@
  * - Without scripts, the browser posts the form and gets a 303 back to /?enviado=1#lista (or ?error=1).
  * - The email is the key: signing up twice keeps one row, fills in what was missing and sends nothing new.
  * - `botcheck` is a honeypot hidden from people: if it comes checked, we answer success and store nothing.
- * - The confirmation goes out only on the first signup, from hola@send.vasija.app (Resend domain send.vasija.app)
+ * - The confirmation (src/correo/confirmacion.ts) goes out only on the first signup, from hola@send.vasija.app (Resend domain send.vasija.app)
  *   with replies to hola@vasija.app. It needs the secret RESEND_API_KEY (Cloudflare Pages, Settings, Variables and
  *   secrets); without it the signup is stored and no email is sent.
  * Nothing here logs the email or the name.
  */
+
+import { confirmacion } from '../../src/correo/confirmacion';
 
 interface D1Result {
   meta?: { changes?: number };
@@ -29,16 +31,12 @@ const EXPERIENCIAS = new Set(['Cuaderno de trabajo', 'Curso', 'Lo sigo en redes'
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const REMITENTE = 'Vasija <hola@send.vasija.app>';
 const RESPONDER_A = 'hola@vasija.app';
-const COMUNIDAD = 'https://chat.whatsapp.com/KS7CNwaLXyuHm5c99BJYGV';
 
 const texto = (value: unknown, max: number): string | null => {
   if (typeof value !== 'string') return null;
   const clean = value.trim().replace(/\s+/g, ' ').slice(0, max);
   return clean || null;
 };
-
-const html = (s: string) =>
-  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 async function leer(request: Request): Promise<{ datos: Record<string, unknown>; json: boolean }> {
   const tipo = request.headers.get('Content-Type') ?? '';
@@ -58,48 +56,9 @@ function responder(request: Request, json: boolean, ok: boolean, status: number)
   return Response.redirect(destino.toString(), 303);
 }
 
-/** The confirmation email, in plain text and HTML. */
-function confirmacion(nombre: string | null) {
-  const saludo = nombre ? `Hola, ${nombre}:` : 'Hola:';
-  const texto = [
-    saludo,
-    '',
-    'Ya estás en la lista de espera de Vasija, la app de crecimiento personal inspirada en la Kabbalah, con el método de Kevin Jakter.',
-    '',
-    'El día que la app esté en App Store y Google Play, te escribimos. Nada más que eso: sin spam.',
-    '',
-    `Mientras tanto, si querés, sumate a la comunidad de Vasija en WhatsApp: ${COMUNIDAD}`,
-    '',
-    'Si no fuiste vos o preferís que te saquemos de la lista, respondé este correo y listo.',
-    '',
-    'Vasija',
-    'https://vasija.app',
-  ].join('\n');
-
-  const p = 'margin:0 0 16px;font:17px/1.55 Georgia,"Times New Roman",serif;color:#2E3540;';
-  const cuerpo = `<!doctype html>
-<html lang="es">
-  <body style="margin:0;padding:0;background:#F0F0EE;">
-    <div style="max-width:520px;margin:0 auto;padding:40px 24px;">
-      <p style="margin:0 0 28px;font:600 24px/1 Georgia,'Times New Roman',serif;color:#1E2530;">Vasija</p>
-      <p style="${p}">${html(saludo)}</p>
-      <p style="${p}">Ya estás en la lista de espera de <strong>Vasija</strong>, la app de crecimiento personal inspirada en la Kabbalah, con el método de Kevin Jakter.</p>
-      <p style="${p}">El día que la app esté en App Store y Google Play, te escribimos. Nada más que eso: sin spam.</p>
-      <p style="${p}">Mientras tanto, si querés, sumate a la comunidad de Vasija en WhatsApp.</p>
-      <p style="margin:0 0 28px;">
-        <a href="${COMUNIDAD}" style="display:inline-block;padding:14px 22px;background:#F4DC63;color:#1E2530;text-decoration:none;font:600 13px/1 'Courier New',monospace;letter-spacing:.12em;text-transform:uppercase;">Sumate a la comunidad</a>
-      </p>
-      <p style="margin:0 0 28px;font:15px/1.5 Georgia,'Times New Roman',serif;color:#5C626C;">Si no fuiste vos o preferís que te saquemos de la lista, respondé este correo y listo.</p>
-      <p style="margin:0;font:13px/1.5 Georgia,'Times New Roman',serif;color:#5C626C;"><a href="https://vasija.app" style="color:#5C626C;">vasija.app</a></p>
-    </div>
-  </body>
-</html>`;
-  return { texto, html: cuerpo };
-}
-
 async function enviarConfirmacion(env: Env, email: string, nombre: string | null): Promise<void> {
   if (!env.RESEND_API_KEY) return;
-  const { texto: text, html: cuerpo } = confirmacion(nombre);
+  const { asunto, texto: text, html: cuerpo } = confirmacion(nombre);
   try {
     const respuesta = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -108,7 +67,7 @@ async function enviarConfirmacion(env: Env, email: string, nombre: string | null
         from: REMITENTE,
         to: [email],
         reply_to: RESPONDER_A,
-        subject: 'Ya estás en la lista de Vasija',
+        subject: asunto,
         text,
         html: cuerpo,
       }),

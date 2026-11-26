@@ -1,7 +1,8 @@
 /**
  * Writes dist/_headers for Cloudflare Pages after the build: the full Content-Security-Policy from security/csp.json
  * (with frame-ancestors and upgrade-insecure-requests, which a <meta> tag cannot carry), security headers for every
- * page, and long caching for Astro's hashed files.
+ * page, long caching for Astro's hashed files, and CORS for the email logo and fonts (public/correo/), which mail clients
+ * load from other origins.
  */
 import { writeFileSync } from 'node:fs';
 import { cspString } from '../security/csp.mjs';
@@ -16,6 +17,10 @@ const headers = `/*
 
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable
+
+/correo/*
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=86400
 `;
 
 writeFileSync('dist/_headers', headers);
