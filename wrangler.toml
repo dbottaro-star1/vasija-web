@@ -7,5 +7,5 @@ compatibility_date = "2026-11-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "vasija-lista"
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "03137dcb-c42b-4253-a1df-de5437b1fba6"
 migrations_dir = "migrations"

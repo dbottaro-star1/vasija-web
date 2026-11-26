@@ -22,7 +22,7 @@ export const APP = {
   publisher: 'delbueno SAS',
   publisherCountry: 'Uruguay',
   /** Support, privacy requests and account deletion. */
-  email: 'hello@delbuenostudio.com',
+  email: 'hola@vasija.app',
   /** Date shown on the legal pages. Update it whenever their content changes. */
   legalUpdated: '26 de noviembre de 2026',
 } as const;
